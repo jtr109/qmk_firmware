@@ -27,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RSFT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,   MO(2),  KC_ENT,     KC_SPC,   MO(3), KC_RALT
+                                          KC_LGUI,   MO(2),  KC_SPC,     KC_SPC,   MO(3), KC_RALT
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -52,13 +52,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_HOME, KC_PGDN, KC_PGUP,  KC_END, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, XXXXXXX, XXXXXXX,    XXXXXXX,   MO(4), _______
+                                          _______, XXXXXXX,  KC_ESC,      KC_ENT,   MO(4), _______
                                       //`--------------------------'  `--------------------------'
   ),
 
   [3] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DRL, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, XXXXXXX,
+      KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,                      KC_MS_LEFT, KC_MS_DOWN, KC_MS_UP, KC_MS_RIGHT, KC_MS_BTN1, KC_MS_BTN2,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -103,16 +103,18 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   return rotation;
 }
 
-#define L_BASE 0
+#define L_QWERTY 0
 #define L_COLEMAK 2
 #define L_LOWER 4
 #define L_RAISE 8
 #define L_ADJUST 16
+#define L_META 32
 
 void oled_render_layer_state(void) {
     oled_write_P(PSTR("Layer: "), false);
     switch (layer_state) {
-        case L_BASE|L_COLEMAK:
+        case L_QWERTY:
+        case L_COLEMAK:
             oled_write_ln_P(PSTR("Default"), false);
             break;
         case L_LOWER:
@@ -127,17 +129,27 @@ void oled_render_layer_state(void) {
         case L_ADJUST|L_LOWER|L_RAISE:
             oled_write_ln_P(PSTR("Adjust"), false);
             break;
+        case L_META:
+        case L_META|L_ADJUST:
+        case L_META|L_ADJUST|L_LOWER:
+        case L_META|L_ADJUST|L_RAISE:
+        case L_META|L_ADJUST|L_LOWER|L_RAISE:
+            oled_write_ln_P(PSTR("Meta"), false);
+            break;
+        default:
+            oled_write_ln_P(PSTR("Unknown"), false);
+            break;
     }
 }
 
 void oled_render_default_layer_state(void) {
-    oled_write_P(PSTR("Default Layer: "), false);
+    oled_write_P(PSTR("Layout: "), false);
     switch (default_layer_state) {
-        case L_BASE:
-            oled_write_ln_P(PSTR("Default"), false);
+        case L_QWERTY:
+            oled_write_ln_P(PSTR("Qwerty"), false);
             break;
         case L_COLEMAK:
-            oled_write_ln_P(PSTR("Lower"), false);
+            oled_write_ln_P(PSTR("Colemak"), false);
             break;
         default:
             oled_write_ln_P(PSTR("Unknown"), false);
